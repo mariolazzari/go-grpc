@@ -82,3 +82,49 @@ protoc --version
 [postman](https://learning.postman.com/docs/sending-requests/grpc/first-grpc-request/)
 [buf build](https://buf.build/)
 [gRPC gateway](https://grpc-ecosystem.github.io/grpc-gateway/)
+
+## Protocol buffer
+
+### Writing proto file
+
+```proto
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/353solutions/rides/pb";
+
+message Location {
+  double lat = 1;
+  double lng = 2;
+}
+
+enum RideType {
+  UNSET = 0;
+  REGULAR = 1;
+  POOL = 2;
+}
+
+message StartRequest {
+  string id = 1;
+  string driver_id = 2;
+  Location location = 3;
+  repeated string passenger_ids = 4;
+  google.protobuf.Timestamp time = 5;
+  RideType type = 6;
+}
+```
+
+### Compiling proto in Go
+
+[Quick start](https://grpc.io/docs/languages/go/quickstart/)
+
+```sh
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+export PATH="$PATH:$(go env GOPATH)/bin"
+go:generate mkdir -p pb
+go:generate protoc --go_out=pb --go_opt=paths=source_relative ./rides.proto
+```
+
+### Using generated code
